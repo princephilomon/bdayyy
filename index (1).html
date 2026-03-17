@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Siri ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --rose: #e8a0a0;
+    --deep-rose: #c4637a;
+    --blush: #f5dde0;
+    --gold: #d4a853;
+    --cream: #fdf6ee;
+    --warm-dark: #2a1a1f;
+    --petal: #f9eaec;
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    background: var(--warm-dark);
+    font-family: 'Cormorant Garamond', serif;
+    cursor: default;
+  }
+
+  /* ── Floating petals ── */
+  .petals-bg {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .petal {
+    position: absolute;
+    top: -40px;
+    width: 12px; height: 18px;
+    border-radius: 50% 0 50% 0;
+    opacity: 0;
+    animation: fallPetal linear infinite;
+  }
+  @keyframes fallPetal {
+    0%   { opacity: 0; transform: translateY(0) rotate(0deg) scale(0.8); }
+    10%  { opacity: 0.7; }
+    90%  { opacity: 0.4; }
+    100% { opacity: 0; transform: translateY(110vh) rotate(720deg) scale(1.1); }
+  }
+
+  /* ── Page wrapper ── */
+  .page {
+    position: relative; z-index: 1;
+    height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  /* ── Decorative ring ── */
+  .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(212,168,83,0.15);
+    animation: ringPulse 4s ease-in-out infinite;
+  }
+  .ring-1 { width: 340px; height: 340px; animation-delay: 0s; }
+  .ring-2 { width: 480px; height: 480px; animation-delay: 0.8s; }
+  .ring-3 { width: 620px; height: 620px; animation-delay: 1.6s; }
+  @keyframes ringPulse {
+    0%, 100% { opacity: 0.2; transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(1.02); }
+  }
+
+  /* ── Star cluster ── */
+  .stars {
+    position: absolute; inset: 0; pointer-events: none;
+  }
+  .star {
+    position: absolute;
+    width: 3px; height: 3px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: twinkle 2.5s ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.1; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.4); }
+  }
+
+  /* ── Content ── */
+  .eyebrow {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 0.85rem;
+    letter-spacing: 0.35em;
+    color: var(--gold);
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 0.4s;
+  }
+
+  .headline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 700;
+    color: var(--cream);
+    line-height: 1.05;
+    margin: 0.4em 0 0.3em;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 0.8s;
+  }
+  .headline em {
+    font-style: italic;
+    color: var(--rose);
+    display: block;
+  }
+
+  .subline {
+    font-style: italic;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    color: rgba(253,246,238,0.65);
+    max-width: 480px;
+    line-height: 1.7;
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 1.2s;
+  }
+
+  /* ── CTA Button ── */
+  .btn-surprise {
+    position: relative;
+    display: inline-block;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--warm-dark);
+    background: var(--gold);
+    border: none;
+    padding: 1rem 2.8rem;
+    border-radius: 60px;
+    cursor: pointer;
+    text-decoration: none;
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 1.6s;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn-surprise::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,0.15);
+    transform: translateX(-100%) skewX(-15deg);
+    transition: transform 0.4s ease;
+  }
+  .btn-surprise:hover::before { transform: translateX(120%) skewX(-15deg); }
+  .btn-surprise:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 40px rgba(212,168,83,0.4);
+  }
+  .btn-surprise:active { transform: translateY(-1px); }
+
+  /* ── Bottom name badge ── */
+  .name-ribbon {
+    position: absolute;
+    bottom: 2.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(253,246,238,0.3);
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 2s;
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Page exit animation ── */
+  body.exit {
+    animation: pageExit 0.7s ease forwards;
+  }
+  @keyframes pageExit {
+    to { opacity: 0; transform: scale(1.04); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Floating petals -->
+<div class="petals-bg" id="petalsBg"></div>
+
+<!-- Decorative rings -->
+<div class="ring ring-1"></div>
+<div class="ring ring-2"></div>
+<div class="ring ring-3"></div>
+
+<!-- Stars -->
+<div class="stars" id="stars"></div>
+
+<div class="page">
+  <p class="eyebrow">A special message for Siri</p>
+
+  <h1 class="headline">
+    Happy Birthday<br>
+    <em>Siri ✨</em>
+  </h1>
+
+  <p class="subline">
+    The world became a little more beautiful the day you were born, Siri.
+    This is made with all my heart — just for you.
+  </p>
+
+  <a class="btn-surprise" href="memories.html" id="surpriseBtn">
+    ✦ Open Your Surprise, Siri
+  </a>
+
+  <p class="name-ribbon">made with love for Siri &nbsp;·&nbsp; always &amp; forever</p>
+</div>
+
+<script>
+  // Generate petals
+  const petalsBg = document.getElementById('petalsBg');
+  const petalColors = ['#e8a0a0','#f5c6c8','#f9d4c2','#d4a853','#f0b8c8'];
+  for (let i = 0; i < 28; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.style.cssText = `
+      left: ${Math.random()*100}%;
+      background: ${petalColors[Math.floor(Math.random()*petalColors.length)]};
+      width: ${8+Math.random()*10}px;
+      height: ${12+Math.random()*14}px;
+      animation-duration: ${5+Math.random()*7}s;
+      animation-delay: ${Math.random()*8}s;
+      opacity: 0;
+    `;
+    petalsBg.appendChild(p);
+  }
+
+  // Generate stars
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 60; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.cssText = `
+      left: ${Math.random()*100}%;
+      top: ${Math.random()*100}%;
+      animation-delay: ${Math.random()*3}s;
+      animation-duration: ${1.5+Math.random()*2.5}s;
+      width: ${1+Math.random()*3}px;
+      height: ${1+Math.random()*3}px;
+      opacity: 0.1;
+    `;
+    starsEl.appendChild(s);
+  }
+
+  // Smooth page transition
+  document.getElementById('surpriseBtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    const href = this.href;
+    document.body.classList.add('exit');
+    setTimeout(() => { window.location.href = href; }, 650);
+  });
+</script>
+</body>
+</html>

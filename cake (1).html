@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Siri 🎂</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --rose: #e8a0a0;
+    --deep-rose: #c4637a;
+    --gold: #d4a853;
+    --cream: #fdf6ee;
+    --warm-dark: #2a1a1f;
+    --pink-light: #f5c6c8;
+  }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    background: var(--warm-dark);
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--cream);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative;
+    animation: pageIn 0.7s ease both;
+  }
+  @keyframes pageIn {
+    from { opacity: 0; transform: scale(0.97); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  /* ── Star bg ── */
+  .star-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .sbg-star { position: absolute; border-radius: 50%; background: var(--gold); }
+  @keyframes sbgTw { 0%,100%{opacity:.05} 50%{opacity:.35} }
+
+  /* ── Page header ── */
+  .page-header {
+    position: relative; z-index: 1;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .page-eyebrow {
+    font-size: 0.78rem; letter-spacing: 0.38em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 0.8rem;
+  }
+  .page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 400; color: var(--cream);
+  }
+  .page-title em { color: var(--rose); font-style: italic; }
+  .page-hint {
+    margin-top: 0.8rem; font-style: italic;
+    font-size: 1rem; color: rgba(253,246,238,0.45);
+  }
+
+  /* ── Cake scene ── */
+  .cake-scene {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center;
+  }
+
+  /* SVG cake */
+  .cake-svg {
+    cursor: pointer;
+    transition: filter 0.3s;
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+  }
+  .cake-svg:hover { filter: drop-shadow(0 24px 50px rgba(212,168,83,0.35)); }
+  .cake-svg.cut { animation: cakeShake 0.5s ease; }
+  @keyframes cakeShake {
+    0%,100%{ transform: rotate(0); }
+    20%{ transform: rotate(-3deg) scale(1.04); }
+    40%{ transform: rotate(3deg) scale(1.06); }
+    60%{ transform: rotate(-2deg) scale(1.03); }
+    80%{ transform: rotate(1deg) scale(1.01); }
+  }
+
+  /* Knife cursor hint */
+  .cut-hint {
+    margin-top: 1.2rem;
+    font-size: 0.8rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: rgba(253,246,238,0.35);
+    animation: hintPulse 2s ease-in-out infinite;
+  }
+  @keyframes hintPulse {
+    0%,100%{ opacity: 0.35; } 50%{ opacity: 0.75; }
+  }
+  .cut-hint.hidden { display: none; }
+
+  /* ── Confetti ── */
+  .confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; }
+  .confetto {
+    position: absolute;
+    top: -20px;
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    opacity: 0;
+    animation: confettiFall linear forwards;
+  }
+  @keyframes confettiFall {
+    0%  { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); }
+    80% { opacity: 1; }
+    100%{ opacity: 0; transform: translateY(110vh) rotate(720deg) scale(0.8); }
+  }
+
+  /* ── Message overlay ── */
+  .message-overlay {
+    position: fixed; inset: 0; z-index: 10;
+    background: rgba(42,26,31,0.85);
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+  .message-overlay.show {
+    opacity: 1; pointer-events: all;
+  }
+  .message-card {
+    background: linear-gradient(145deg, #3a1e26, #2a1a1f);
+    border: 1px solid rgba(212,168,83,0.25);
+    border-radius: 12px;
+    padding: 3.5rem 3rem;
+    max-width: 520px; width: 90%;
+    text-align: center;
+    transform: scale(0.85) translateY(20px);
+    transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative;
+    overflow: hidden;
+  }
+  .message-overlay.show .message-card {
+    transform: scale(1) translateY(0);
+  }
+  /* Corner gold accents */
+  .message-card::before,
+  .message-card::after {
+    content: '';
+    position: absolute;
+    width: 30px; height: 30px;
+    border-color: var(--gold);
+    border-style: solid;
+    opacity: 0.4;
+  }
+  .message-card::before { top: 14px; left: 14px; border-width: 1px 0 0 1px; }
+  .message-card::after  { bottom: 14px; right: 14px; border-width: 0 1px 1px 0; }
+
+  .msg-emoji { font-size: 3rem; margin-bottom: 1rem; }
+  .msg-eyebrow {
+    font-size: 0.72rem; letter-spacing: 0.38em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1.2rem;
+  }
+  .msg-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 700; color: var(--cream);
+    line-height: 1.2; margin-bottom: 1.5rem;
+  }
+  .msg-heading em { color: var(--rose); font-style: italic; }
+  .msg-body {
+    font-size: 1.05rem; font-style: italic; font-weight: 300;
+    color: rgba(253,246,238,0.7); line-height: 1.85;
+    margin-bottom: 2rem;
+  }
+  .msg-signature {
+    font-size: 0.82rem; letter-spacing: 0.2em;
+    color: var(--gold); opacity: 0.7;
+    margin-bottom: 2rem;
+  }
+  .btn-close {
+    display: inline-block;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.9rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--warm-dark);
+    background: var(--gold);
+    border: none; padding: 0.9rem 2.5rem;
+    border-radius: 40px; cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn-close:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(212,168,83,0.4);
+  }
+
+  /* ── Back link ── */
+  .back-link {
+    position: fixed; top: 1.5rem; left: 1.5rem; z-index: 20;
+    font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: rgba(253,246,238,0.3); text-decoration: none;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--gold); }
+
+  /* Candle flame animation */
+  @keyframes flicker1 { 0%,100%{transform:scaleX(1) scaleY(1) translateX(0)} 25%{transform:scaleX(0.85) scaleY(1.1) translateX(-1px)} 75%{transform:scaleX(1.1) scaleY(0.92) translateX(1px)} }
+  @keyframes flicker2 { 0%,100%{transform:scaleX(1) scaleY(1)} 30%{transform:scaleX(1.1) scaleY(0.88) translateX(1px)} 70%{transform:scaleX(0.9) scaleY(1.08) translateX(-1px)} }
+  @keyframes flicker3 { 0%,100%{transform:scaleX(1) scaleY(1)} 40%{transform:scaleX(0.88) scaleY(1.12)} 60%{transform:scaleX(1.08) scaleY(0.9)} }
+  .flame-1 { transform-origin: bottom center; animation: flicker1 0.7s ease-in-out infinite; }
+  .flame-2 { transform-origin: bottom center; animation: flicker2 0.85s ease-in-out infinite 0.1s; }
+  .flame-3 { transform-origin: bottom center; animation: flicker3 0.65s ease-in-out infinite 0.2s; }
+  .candles-group { transition: opacity 0.6s ease; }
+  .candles-group.blown { opacity: 0; }
+</style>
+</head>
+<body>
+
+<a href="memories.html" class="back-link">← Back</a>
+
+<div class="star-bg" id="starBg"></div>
+<div class="confetti-container" id="confettiContainer"></div>
+
+<!-- Page header -->
+<div class="page-header">
+  <p class="page-eyebrow">one last surprise</p>
+  <h1 class="page-title">Make a wish, Siri &amp;<br><em>cut the cake</em></h1>
+  <p class="page-hint" id="hintText">tap the cake to cut it ✦</p>
+</div>
+
+<!-- Cake scene -->
+<div class="cake-scene">
+  <svg class="cake-svg" id="cakeSvg" viewBox="0 0 280 240" width="280" height="240" xmlns="http://www.w3.org/2000/svg">
+
+    <!-- Plate shadow -->
+    <ellipse cx="140" cy="228" rx="110" ry="10" fill="rgba(0,0,0,0.3)"/>
+
+    <!-- Plate -->
+    <ellipse cx="140" cy="220" rx="105" ry="9" fill="#3a2530"/>
+    <ellipse cx="140" cy="218" rx="105" ry="9" fill="#4a3040"/>
+
+    <!-- Cake bottom tier -->
+    <rect x="42" y="155" width="196" height="58" rx="4" fill="#c4637a"/>
+    <!-- bottom tier frosting details -->
+    <rect x="42" y="155" width="196" height="14" rx="4" fill="#e8a0a0"/>
+    <ellipse cx="140" cy="155" rx="98" ry="8" fill="#f5c6c8"/>
+    <!-- bottom tier drips -->
+    <path d="M70,163 Q75,175 72,180" stroke="#f5dde0" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M100,162 Q105,176 103,183" stroke="#f5dde0" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M130,161 Q135,177 133,184" stroke="#f5dde0" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M160,162 Q165,176 163,183" stroke="#f5dde0" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M190,163 Q195,175 193,180" stroke="#f5dde0" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <!-- decorative dots on bottom tier -->
+    <circle cx="80" cy="178" r="3.5" fill="#f9eaec" opacity="0.7"/>
+    <circle cx="110" cy="182" r="2.5" fill="#f9eaec" opacity="0.6"/>
+    <circle cx="140" cy="183" r="3" fill="#f9eaec" opacity="0.7"/>
+    <circle cx="170" cy="182" r="2.5" fill="#f9eaec" opacity="0.6"/>
+    <circle cx="200" cy="178" r="3.5" fill="#f9eaec" opacity="0.7"/>
+    <!-- gold beads along edge -->
+    <circle cx="60" cy="192" r="2" fill="#d4a853" opacity="0.8"/>
+    <circle cx="85" cy="198" r="2" fill="#d4a853" opacity="0.8"/>
+    <circle cx="115" cy="202" r="2" fill="#d4a853" opacity="0.8"/>
+    <circle cx="140" cy="203" r="2" fill="#d4a853" opacity="0.8"/>
+    <circle cx="165" cy="202" r="2" fill="#d4a853" opacity="0.8"/>
+    <circle cx="195" cy="198" r="2" fill="#d4a853" opacity="0.8"/>
+    <circle cx="220" cy="192" r="2" fill="#d4a853" opacity="0.8"/>
+
+    <!-- Cake top tier -->
+    <rect x="72" y="96" width="136" height="62" rx="4" fill="#de7a92"/>
+    <rect x="72" y="96" width="136" height="14" rx="4" fill="#f0b0c0"/>
+    <ellipse cx="140" cy="96" rx="68" ry="7" fill="#f5c6c8"/>
+    <!-- top tier drips -->
+    <path d="M96,104 Q100,116 98,122" stroke="#fce8ee" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M120,103 Q124,117 122,124" stroke="#fce8ee" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M144,102 Q148,116 146,124" stroke="#fce8ee" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M168,103 Q172,117 170,124" stroke="#fce8ee" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M190,104 Q194,116 192,122" stroke="#fce8ee" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- decorative swirls on top tier -->
+    <path d="M92,125 Q98,118 104,125 Q110,132 116,125" stroke="#f9d4d8" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M152,126 Q158,119 164,126 Q170,133 176,126" stroke="#f9d4d8" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <!-- heart on top tier -->
+    <path d="M132,138 Q132,132 138,132 Q144,132 144,138 Q144,144 138,149 Q132,144 132,138Z" fill="#e8a0a0" opacity="0.8"/>
+
+    <!-- Candles group -->
+    <g class="candles-group" id="candlesGroup">
+      <!-- Candle 1 -->
+      <rect x="96" y="68" width="8" height="28" rx="2" fill="#f0b0c0"/>
+      <rect x="96" y="68" width="8" height="6" rx="1" fill="#de7a92"/>
+      <line x1="100" y1="68" x2="100" y2="62" stroke="#6b3040" stroke-width="1"/>
+      <g class="flame-1">
+        <ellipse cx="100" cy="58" rx="5" ry="7" fill="#f9cb42" opacity="0.9"/>
+        <ellipse cx="100" cy="60" rx="3" ry="4.5" fill="#ef8b2c" opacity="0.85"/>
+        <ellipse cx="100" cy="61.5" rx="1.5" ry="3" fill="#fff" opacity="0.6"/>
+      </g>
+
+      <!-- Candle 2 -->
+      <rect x="122" y="64" width="8" height="32" rx="2" fill="#f5c6a0"/>
+      <rect x="122" y="64" width="8" height="6" rx="1" fill="#d4a853"/>
+      <line x1="126" y1="64" x2="126" y2="58" stroke="#6b5030" stroke-width="1"/>
+      <g class="flame-2">
+        <ellipse cx="126" cy="54" rx="5" ry="7" fill="#f9cb42" opacity="0.9"/>
+        <ellipse cx="126" cy="56" rx="3" ry="4.5" fill="#ef8b2c" opacity="0.85"/>
+        <ellipse cx="126" cy="57.5" rx="1.5" ry="3" fill="#fff" opacity="0.6"/>
+      </g>
+
+      <!-- Candle 3 (center tall) -->
+      <rect x="148" y="60" width="8" height="36" rx="2" fill="#a0c8e8"/>
+      <rect x="148" y="60" width="8" height="6" rx="1" fill="#5890c0"/>
+      <line x1="152" y1="60" x2="152" y2="54" stroke="#304a6b" stroke-width="1"/>
+      <g class="flame-3">
+        <ellipse cx="152" cy="50" rx="5.5" ry="8" fill="#f9cb42" opacity="0.9"/>
+        <ellipse cx="152" cy="52" rx="3" ry="5" fill="#ef8b2c" opacity="0.85"/>
+        <ellipse cx="152" cy="54" rx="1.5" ry="3" fill="#fff" opacity="0.6"/>
+      </g>
+
+      <!-- Candle 4 -->
+      <rect x="174" y="64" width="8" height="32" rx="2" fill="#c8e8b0"/>
+      <rect x="174" y="64" width="8" height="6" rx="1" fill="#68c040"/>
+      <line x1="178" y1="64" x2="178" y2="58" stroke="#306820" stroke-width="1"/>
+      <g class="flame-1" style="animation-delay:0.15s">
+        <ellipse cx="178" cy="54" rx="5" ry="7" fill="#f9cb42" opacity="0.9"/>
+        <ellipse cx="178" cy="56" rx="3" ry="4.5" fill="#ef8b2c" opacity="0.85"/>
+        <ellipse cx="178" cy="57.5" rx="1.5" ry="3" fill="#fff" opacity="0.6"/>
+      </g>
+    </g>
+
+    <!-- Cake top frosting rosettes -->
+    <circle cx="90"  cy="93" r="6" fill="#f9eaec" opacity="0.8"/>
+    <circle cx="90"  cy="93" r="3" fill="#f5c6c8"/>
+    <circle cx="112" cy="91" r="6" fill="#f9eaec" opacity="0.8"/>
+    <circle cx="112" cy="91" r="3" fill="#f5c6c8"/>
+    <circle cx="166" cy="91" r="6" fill="#f9eaec" opacity="0.8"/>
+    <circle cx="166" cy="91" r="3" fill="#f5c6c8"/>
+    <circle cx="188" cy="93" r="6" fill="#f9eaec" opacity="0.8"/>
+    <circle cx="188" cy="93" r="3" fill="#f5c6c8"/>
+    <!-- gold sprinkles -->
+    <rect x="84"  y="108" width="6" height="2" rx="1" fill="#d4a853" opacity="0.8" transform="rotate(25 84 108)"/>
+    <rect x="108" y="115" width="5" height="2" rx="1" fill="#d4a853" opacity="0.7" transform="rotate(-15 108 115)"/>
+    <rect x="155" y="113" width="6" height="2" rx="1" fill="#d4a853" opacity="0.8" transform="rotate(40 155 113)"/>
+    <rect x="182" y="108" width="5" height="2" rx="1" fill="#d4a853" opacity="0.7" transform="rotate(-30 182 108)"/>
+    <rect x="140" y="120" width="6" height="2" rx="1" fill="#d4a853" opacity="0.9" transform="rotate(10 140 120)"/>
+
+    <!-- Cut line (hidden by default, shown after cut) -->
+    <line id="cutLine" x1="140" y1="96" x2="140" y2="213" stroke="rgba(253,246,238,0.7)" stroke-width="1.5" stroke-dasharray="4 3" opacity="0"/>
+
+    <!-- Glow ring (activates on hover via CSS) -->
+    <ellipse cx="140" cy="96" rx="68" ry="7" fill="none" stroke="var(--gold)" stroke-width="1" opacity="0.2"/>
+  </svg>
+
+  <p class="cut-hint" id="cutHint">✦ tap to cut &amp; make a wish ✦</p>
+</div>
+
+<!-- Message overlay -->
+<div class="message-overlay" id="messageOverlay">
+  <div class="message-card">
+    <div class="msg-emoji">🎉</div>
+    <p class="msg-eyebrow">your special message</p>
+    <h2 class="msg-heading">
+      Siri, you are <em>so deeply</em><br>loved
+    </h2>
+    <p class="msg-body">
+      From the very first day I met you, Siri, I knew you were someone extraordinary. You carry kindness in your smile, strength in your spirit, and magic in everything you do.<br><br>
+      On this birthday, I wish you a year overflowing with joy, adventures, laughter, and every beautiful thing you deserve. Close your eyes, Siri, hold your wish close — and know that someone out there is cheering for you with their whole heart. 🌸
+    </p>
+    <p class="msg-signature">— with love, always and forever, for Siri ✦</p>
+    <button class="btn-close" id="closeBtn">Thank you! 🎂</button>
+  </div>
+</div>
+
+<script>
+  // Star background
+  const sb = document.getElementById('starBg');
+  for (let i = 0; i < 70; i++) {
+    const s = document.createElement('div');
+    s.className = 'sbg-star';
+    const sz = 1 + Math.random() * 2.5;
+    s.style.cssText = `
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      width:${sz}px;height:${sz}px;
+      animation:sbgTw ${2+Math.random()*3}s ease-in-out infinite;
+      animation-delay:${Math.random()*4}s;
+    `;
+    sb.appendChild(s);
+  }
+
+  // Confetti
+  function launchConfetti() {
+    const container = document.getElementById('confettiContainer');
+    const colors = ['#e8a0a0','#f5c6c8','#d4a853','#f9cb42','#c4637a','#a0c8e8','#c8e8b0','#fdf6ee','#f0b0c0'];
+    for (let i = 0; i < 120; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetto';
+      const size = 5 + Math.random() * 9;
+      c.style.cssText = `
+        left: ${10+Math.random()*80}%;
+        width: ${size}px;
+        height: ${size * (0.5 + Math.random())}px;
+        background: ${colors[Math.floor(Math.random()*colors.length)]};
+        border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+        animation-duration: ${1.5 + Math.random()*2}s;
+        animation-delay: ${Math.random()*0.8}s;
+        transform: rotate(${Math.random()*360}deg);
+      `;
+      container.appendChild(c);
+      setTimeout(() => c.remove(), 4000);
+    }
+  }
+
+  let cut = false;
+
+  document.getElementById('cakeSvg').addEventListener('click', function() {
+    if (cut) return;
+    cut = true;
+
+    // Animate cake
+    this.classList.add('cut');
+
+    // Blow candles
+    document.getElementById('candlesGroup').classList.add('blown');
+
+    // Show cut line
+    const cutLine = document.getElementById('cutLine');
+    cutLine.style.transition = 'opacity 0.4s';
+    cutLine.style.opacity = '1';
+
+    // Hide hint
+    document.getElementById('cutHint').classList.add('hidden');
+    document.getElementById('hintText').style.opacity = '0';
+
+    // Launch confetti
+    setTimeout(launchConfetti, 300);
+
+    // Show message
+    setTimeout(() => {
+      document.getElementById('messageOverlay').classList.add('show');
+    }, 900);
+  });
+
+  document.getElementById('closeBtn').addEventListener('click', function() {
+    document.getElementById('messageOverlay').classList.remove('show');
+    // Launch a second confetti burst
+    setTimeout(launchConfetti, 200);
+  });
+</script>
+</body>
+</html>
